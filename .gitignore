@@ -58,3 +58,7 @@ reicast-ios.xccheckout
 
 # Objects created by make/gcc
 /core/**/*.o
+
+# Patch
+*.rej
+>>>>>>> gitzmo98/AddRpiPatches
