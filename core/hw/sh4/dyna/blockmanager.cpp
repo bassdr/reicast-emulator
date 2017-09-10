@@ -85,7 +85,7 @@ RuntimeBlockInfo* bm_GetBlock2(void* dynarec_code)
 		return *iter;
 	}
 
-   printf("bm_GetBlock(%08X) failed ..\n",dynarec_code);
+   printf("bm_GetBlock(%08lX) failed ..\n",reinterpret_cast<uint64_t>(dynarec_code));
    return 0;
 }
 
@@ -116,7 +116,7 @@ void bm_AddBlock(RuntimeBlockInfo* blk)
 	all_blocks.push_back(blk);
 	if (blkmap.find(blk)!=blkmap.end())
 	{
-		printf("DUP: %08X %08X %08X %08X\n", (*blkmap.find(blk))->addr,(*blkmap.find(blk))->code,blk->addr,blk->code);
+		printf("DUP: %08X %08lX %08X %08lX\n", (*blkmap.find(blk))->addr,reinterpret_cast<uint64_t>((*blkmap.find(blk))->code),blk->addr,reinterpret_cast<uint64_t>(blk->code));
 		verify(false);
 	}
 	blkmap.insert(blk);
@@ -312,9 +312,9 @@ void bm_WriteBlockMap(const string& file)
 		printf("Writing block map !\n");
 		for (size_t i=0; i<all_blocks.size(); i++)
 		{
-			fprintf(f,"block: %d:%08X:%08X:%d:%d:%d\n",all_blocks[i]->BlockType,all_blocks[i]->addr,all_blocks[i]->code,all_blocks[i]->host_code_size,all_blocks[i]->guest_cycles,all_blocks[i]->guest_opcodes);
+			fprintf(f,"block: %d:%08X:%08lX:%d:%d:%d\n",all_blocks[i]->BlockType,all_blocks[i]->addr,reinterpret_cast<uint64_t>(all_blocks[i]->code),all_blocks[i]->host_code_size,all_blocks[i]->guest_cycles,all_blocks[i]->guest_opcodes);
 			for(size_t j=0;j<all_blocks[i]->oplist.size();j++)
-				fprintf(f,"\top: %d:%d:%s\n",j,all_blocks[i]->oplist[j].guest_offs,all_blocks[i]->oplist[j].dissasm().c_str());
+				fprintf(f,"\top: %zu:%hu:%s\n",j,all_blocks[i]->oplist[j].guest_offs,all_blocks[i]->oplist[j].dissasm().c_str());
 		}
 		fclose(f);
 		printf("Finished writing block map\n");
@@ -345,7 +345,7 @@ void sh4_jitsym(FILE* out)
 {
 	for (size_t i=0; i<all_blocks.size(); i++)
 	{
-		fprintf(out,"%08p %d %08X\n",all_blocks[i]->code,all_blocks[i]->host_code_size,all_blocks[i]->addr);
+		fprintf(out,"%08lx %d %08lX\n",reinterpret_cast<uint64_t>(all_blocks[i]->code),all_blocks[i]->host_code_size,(uintptr_t)all_blocks[i]->addr);
 	}
 }
 
@@ -374,8 +374,8 @@ static void bm_PrintTopBlocks(void)
 	double sel_hops=0;
 	for (size_t i=0;i<(all_blocks.size()/100);i++)
 	{
-		printf("Block %08X: %06X, r: %d (c: %d, s: %d, h: %d) (r: %.2f%%, c: %.2f%%, h: %.2f%%)\n",
-			all_blocks[i]->addr, all_blocks[i]->code,all_blocks[i]->runs,
+		printf("Block %08X: %06lX, r: %u (c: %u, s: %u, h: %u) (r: %.2lf%%, c: %.2lf%%, h: %.2lf%%)\n",
+			all_blocks[i]->addr, reinterpret_cast<uint64_t>(all_blocks[i]->code),all_blocks[i]->runs,
 			all_blocks[i]->guest_cycles,all_blocks[i]->guest_opcodes,all_blocks[i]->host_opcodes,
 
 			all_blocks[i]->runs/total_runs,
@@ -385,13 +385,13 @@ static void bm_PrintTopBlocks(void)
 		sel_hops+=all_blocks[i]->host_opcodes*all_blocks[i]->runs;
 	}
 
-	printf(" >-< %.2f%% covered in top 1% blocks\n",sel_hops/total_hops);
+	printf(" >-< %.2lf%% covered in top 1%% blocks\n",sel_hops/total_hops);
 
 	size_t i;
 	for (i=all_blocks.size()/100;sel_hops/total_hops<50;i++)
 	{
-		printf("Block %08X: %06X, r: %d (c: %d, s: %d, h: %d) (r: %.2f%%, c: %.2f%%, h: %.2f%%)\n",
-			all_blocks[i]->addr, all_blocks[i]->code,all_blocks[i]->runs,
+		printf("Block %08X: %06lX, r: %u (c: %u, s: %u, h: %u) (r: %.2lf%%, c: %.2lf%%, h: %.2lf%%)\n",
+			all_blocks[i]->addr, reinterpret_cast<uint64_t>(all_blocks[i]->code),all_blocks[i]->runs,
 			all_blocks[i]->guest_cycles,all_blocks[i]->guest_opcodes,all_blocks[i]->host_opcodes,
 
 			all_blocks[i]->runs/total_runs,
@@ -490,21 +490,21 @@ void print_blocks(void)
 
 		if (f)
 		{
-			fprintf(f,"block: %08X\n",blk);
+			fprintf(f,"block: %08lX\n",reinterpret_cast<uint64_t>(blk));
 			fprintf(f,"addr: %08X\n",blk->addr);
 			fprintf(f,"hash: %s\n",blk->hash());
 			fprintf(f,"hash_rloc: %s\n",blk->hash(false,true));
-			fprintf(f,"code: %08X\n",blk->code);
+			fprintf(f,"code: %08lX\n",reinterpret_cast<uint64_t>(blk->code));
 			fprintf(f,"runs: %d\n",blk->runs);
 			fprintf(f,"BlockType: %d\n",blk->BlockType);
 			fprintf(f,"NextBlock: %08X\n",blk->NextBlock);
 			fprintf(f,"BranchBlock: %08X\n",blk->BranchBlock);
-			fprintf(f,"pNextBlock: %08X\n",blk->pNextBlock);
-			fprintf(f,"pBranchBlock: %08X\n",blk->pBranchBlock);
+			fprintf(f,"pNextBlock: %08lX\n",reinterpret_cast<uint64_t>(blk->pNextBlock));
+			fprintf(f,"pBranchBlock: %08lX\n",reinterpret_cast<uint64_t>(blk->pBranchBlock));
 			fprintf(f,"guest_cycles: %d\n",blk->guest_cycles);
 			fprintf(f,"guest_opcodes: %d\n",blk->guest_opcodes);
 			fprintf(f,"host_opcodes: %d\n",blk->host_opcodes);
-			fprintf(f,"il_opcodes: %d\n",blk->oplist.size());
+			fprintf(f,"il_opcodes: %zu\n",static_cast<size_t>(blk->oplist.size()));
 
 			u32 hcode=0;
 			s32 gcode=-1;

@@ -456,6 +456,7 @@ ifeq ($(DEBUG),1)
 OPTFLAGS       := -O0
 LDFLAGS  += -g
 CFLAGS   += -g
+CXXFLAGS += -g
 else
 OPTFLAGS       := -O2
 RZDCY_CFLAGS   += -DNDEBUG

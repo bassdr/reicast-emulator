@@ -291,7 +291,11 @@ struct maple_sega_vmu: maple_base
 		}
 		else
 		{
-			fread(flash_data,1,sizeof(flash_data),file);
+			size_t size = fread(flash_data,1,sizeof(flash_data),file);
+                        if(size != sizeof(flash_data) && ferror(file))
+                        {
+				printf("Failed to read from VMU save file \"%s\"\n",apath.c_str());
+                        }
 		}
 
 		u8 sum = 0;

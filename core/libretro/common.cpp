@@ -385,7 +385,7 @@ printf("mprot hit @ ptr 0x%08X @@ code: %08X, %d\n", ctx.pc, dyna_cde);
 #endif
    else
    {
-      printf("SIGSEGV @ %p (signal_handler + 0x%p) ... %p -> was not in vram\n", ctx.pc, ctx.pc - (size_t)signal_handler, si->si_addr);
+      printf("SIGSEGV @ %08lx (signal_handler + 0x%08lx) ... %08lx -> was not in vram\n", ctx.pc, ctx.pc - reinterpret_cast<uint64_t>(signal_handler), reinterpret_cast<uint64_t>(si->si_addr));
       die("segfault");
       signal(SIGSEGV, SIG_DFL);
    }
@@ -615,7 +615,7 @@ void common_libretro_setup(void)
 #endif
 
 #if defined(__MACH__) || defined(__linux__)
-   printf("Linux paging: %08X %08X %08X\n",sysconf(_SC_PAGESIZE),PAGE_SIZE,PAGE_MASK);
+   printf("Linux paging: %08lX %08X %08X\n",sysconf(_SC_PAGESIZE),PAGE_SIZE,PAGE_MASK);
    verify(PAGE_MASK==(sysconf(_SC_PAGESIZE)-1));
 #endif
 }

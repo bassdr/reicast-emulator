@@ -421,19 +421,6 @@ using namespace std;
 #define naked
 #endif
 
-
-#if DEBUG
-//force
-#define INLINE
-//sugest
-#define SINLINE
-#else
-//force
-#define INLINE __forceinline
-//sugest
-#define SINLINE __inline
-#endif
-
 //no inline -- fixme
 #ifdef _WIN32
 #define NOINLINE __declspec(noinline)

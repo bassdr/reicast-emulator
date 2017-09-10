@@ -1,3 +1,5 @@
+#pragma once
+
 #include <retro_miscellaneous.h>
 #include "types.h"
 
