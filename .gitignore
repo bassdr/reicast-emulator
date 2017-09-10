@@ -51,3 +51,13 @@ shell/linux/nosym-reicast.elf
 shell/linux/reicast.elf
 
 reicast-ios.xccheckout
+
+# kdevelop
+/.kdev4/
+/*.kdev4
+
+# Objects created by make/gcc
+/core/**/*.o
+
+# Patch
+*.rej
