@@ -158,7 +158,7 @@ else ifneq (,$(findstring odroid,$(platform)))
 	fpic = -fPIC
 	GLES = 1
 	LIBS += -lrt
-	GL_LIB := -lGLESv2
+	FORCE_GLES = 1
 	CPUFLAGS += -DNO_ASM -DARM -D__arm__ -DARM_ASM -D__NEON_OPT -DNOSSE
 	CFLAGS += -marm -mfloat-abi=hard -mfpu=neon
 	CXXFLAGS += -marm -mfloat-abi=hard -mfpu=neon
